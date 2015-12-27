@@ -1,0 +1,99 @@
+package assignmentproblem;
+import java.util.Arrays;
+import java.util.Random;
+/**
+ *
+ * @author Jesse Martinez
+ */
+public class AssignmentProblem {
+
+    /**
+     * @param args the command line arguments
+     */
+ 
+    
+    public static void main(String[] args) 
+    {
+        /* The following code is used to create a teacher/class matrix of size nxn. 
+         * We simply choose our n and then the following code will generate preference sets in the rows {1,2,...n}.
+         * We will then shuffle these sets which will allow us to run the code multiple times
+         * to help us understand concepts in a broader sense than in a narrowed case. 
+         * Everytime we run the problem we will have new preference sets and data to consider.
+         */
+        
+        int n = 12; // Here we can assign the number of teachers and courses
+        int[] result = new int[n]; // This will store the solution set after the Hungarian algorithm runs
+        double[][] preferenceMatrix = new double[n][n]; // We create a matrix size nxn
+        int[] valueSet = new int[n]; // This is our value set
+       
+        // Here we are filling our matrix with default preference sets {1,2,...n} in the rows.
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                preferenceMatrix[i][j] = j;
+            }
+        }
+        
+        // We create a random generator to help shuffle the preference sets
+        Random randomGenerator = new Random();
+        int randomIndex; // this will pick a random index in the preference set
+        double randomValue; // this will store the value at that index
+        
+        // Now we shuffle the preference sets
+        for(int i = 0;i<n;i++)
+        {
+            for(int j = 0;j<n;++j)
+            {
+                 // selects an index at random
+                randomIndex = randomGenerator.nextInt(n);
+
+                // swap values at index
+                randomValue = preferenceMatrix[i][randomIndex];
+                preferenceMatrix[i][randomIndex] = preferenceMatrix[i][j];
+                preferenceMatrix[i][j] = randomValue;
+            }
+        }
+
+        HungarianAlgorithm assign = new HungarianAlgorithm(preferenceMatrix);
+        result = assign.execute();
+        int totalCost = 0;
+        
+        System.out.println("The list of preference sets are (offset by 1):" + Arrays.deepToString(preferenceMatrix)); // I'll fix the offset later
+        
+      
+        for(int i=0;i<n;i++)
+        {
+            valueSet[i] = (int)preferenceMatrix[i][result[i]]+1;
+            System.out.println("Teacher "+(i+1)+" gets assigned to course "+ (result[i]+1));
+            totalCost += preferenceMatrix[i][result[i]]+1;
+        }
+        System.out.println("The value set is:"+Arrays.toString(valueSet));
+        System.out.println("Total score is "+totalCost);
+        
+        /**Example 1-2 The trivial case: Each professor has a unique value assigned to each course.
+        double[][] valueMatrix = {{1,2,3,4,5,6},{6,1,2,3,4,5},
+                                  {5,6,1,2,3,4},{4,5,6,1,2,3},
+                                  {3,4,5,6,1,2},{2,3,4,5,6,1}};
+        
+        int[] result = new int[6];*/
+        
+        /**Example 1-4 
+        int[] resultOne = new int[n/2];
+        int[] resultTwo = new int[n/2];
+        int[] valueSetOne = new int[n/2];
+        int[] valueSetTwo = new int[n/2];
+        double[][] preferenceMatrixOne = {{6,2,5,1,3,4},{4,1,5,3,6,2},{3,1,5,6,4,2},{5,6,4,1,3,2},{2,3,6,1,5,4},{6,4,5,3,1,2}};
+        double[][] preferenceMatrixTwo = {{6,3,1,2,5,4},{1,4,3,2,5,6},{6,5,3,1,2,4},{4,6,1,5,3,2},{4,6,3,2,1,5},{4,5,2,1,3,6}};
+        
+        HungarianAlgorithm assignOne = new HungarianAlgorithm(preferenceMatrixOne);
+        HungarianAlgorithm assignTwo = new HungarianAlgorithm(preferenceMatrixTwo);
+        resultOne = assignOne.execute();
+        resultTwo = assignTwo.execute();
+        
+        System.out.println(Arrays.toString(resultOne));
+        System.out.print(Arrays.toString(resultTwo));
+        */ 
+    }
+    
+}
